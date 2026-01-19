@@ -231,6 +231,7 @@ header h1 {
     max-width: 80%;
     line-height: 1.5;
     word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .user-message .message-content {
