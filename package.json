@@ -1,7 +1,7 @@
 {
   "name": "ai-sabukeeper",
   "version": "1.0.0",
-  "description": "AIサブキーパー - 芝管理に関するAIチャットアプリ",
+  "description": "芝しごと・AI質問箱 - 芝管理に関するAIチャットアプリ",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

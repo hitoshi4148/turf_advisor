@@ -160,7 +160,20 @@ function addMessage(content, isUser = false) {
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    contentDiv.textContent = content;
+    
+    // ユーザーメッセージはそのまま表示、AIのレスポンスはMarkdownとしてレンダリング
+    if (isUser) {
+        contentDiv.textContent = content;
+    } else {
+        // MarkdownをHTMLに変換（XSS対策でサニタイズ）
+        if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+            const html = marked.parse(content);
+            contentDiv.innerHTML = DOMPurify.sanitize(html);
+        } else {
+            // Markdownライブラリが読み込まれていない場合は通常表示
+            contentDiv.textContent = content;
+        }
+    }
     
     messageDiv.appendChild(contentDiv);
     messagesContainer.appendChild(messageDiv);
