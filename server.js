@@ -64,20 +64,35 @@ app.post('/api/chat', async (req, res) => {
     let errorMessage = 'AIからの応答を取得できませんでした。';
     let errorDetails = error.message || '不明なエラー';
     
+    const statusCode =
+      error?.status ||
+      error?.response?.status ||
+      (() => {
+        const msg = String(error?.message || '');
+        const bracket = msg.match(/\[(\d{3})\s+[^\]]+\]/);
+        if (bracket) return Number(bracket[1]);
+        const plain = msg.match(/\b(4\d{2}|5\d{2})\b/);
+        if (plain) return Number(plain[1]);
+        return undefined;
+      })();
+
     // エラーの種類に応じたメッセージ
     if (error.message && error.message.includes('API_KEY')) {
       errorMessage = 'APIキーが無効です。.envファイルのGEMINI_API_KEYを確認してください。';
-    } else if (error.message && error.message.includes('403')) {
+    } else if (statusCode === 403 || (error.message && error.message.includes('403'))) {
       errorMessage = 'APIキーにアクセス権限がありません。APIキーが有効か確認してください。';
-    } else if (error.message && error.message.includes('429')) {
+    } else if (statusCode === 429 || (error.message && error.message.includes('429'))) {
       errorMessage = 'リクエスト制限を超えました。しばらく時間をおいてから再試行してください。';
-    } else if (error.message && error.message.includes('model')) {
+    } else if (statusCode === 503) {
+      errorMessage = 'Geminiが高負荷のため一時的に利用できません。しばらく時間をおいてから再試行してください。';
+    } else if (error.message && error.message.toLowerCase().includes('model') && (error.message.includes('not found') || error.message.includes('NOT_FOUND') || statusCode === 404)) {
       errorMessage = 'モデル名が正しくありません。設定を確認してください。';
     }
     
     res.status(500).json({ 
       error: errorMessage,
       details: errorDetails,
+      statusCode,
       fullError: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
