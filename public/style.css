@@ -17,6 +17,22 @@ body {
     margin: 0 auto;
 }
 
+.pr-banner-link {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 16px;
+    line-height: 0;
+}
+
+.pr-banner-img {
+    display: block;
+    width: 300px;
+    height: 112px;
+    max-width: 300px;
+    max-height: 112px;
+}
+
 header {
     text-align: center;
     color: white;
